@@ -5,20 +5,11 @@
 
 # Cleanup
 
-# Utils - Convertor of ipv4 netmask to cdir
-ipv4mask2cdr ()
-{
-   local x=${1##*255.}
-   set -- 0^^^128^192^224^240^248^252^254^ $(( (${#1} - ${#x})*2 )) ${x%%.*}
-   x=${1%%$3*}
-   echo $(( $2 + (${#x}/4) ))
-}
-
-ANYGW6=$(uci get network.lm_net_br_lan_anygw_if.ip6addr)
+ANYGW6=$(uci get network.lm_net_br_lan_anygw_if.ip6addr | cut -d "/" -f 1)
 ANYGW4=$(uci get network.lm_net_br_lan_anygw_if.ipaddr)
-MESH4MASK=$(uci get network.lm_net_anygw_route4.netmask)
-MESH4=$(uci get network.lm_net_anygw_route4.target)/$(ipv4mask2cdr $MESH4MASK)
-MESH6=$(uci get network.lm_net_anygw_route6.target)
+
+MESH4=$(uci get network.lm_net_anygw_rule4.src)
+MESH6=$(uci get network.lm_net_anygw_rule6.src)
 
 voucher print_valid_macs > /tmp/validmacs
 
